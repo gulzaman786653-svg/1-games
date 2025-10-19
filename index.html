@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1% Game - Blockchain Gaming</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="logo">1% GAME</div>
+        
+        <!-- Navigation Buttons -->
+        <nav>
+            <button class="nav-btn" onclick="showSection('home')">Home</button>
+            <button class="nav-btn" onclick="showSection('games')">Games</button>
+            <button class="nav-btn" onclick="showSection('leaderboard')">Leaderboard</button>
+            <button class="nav-btn" onclick="showSection('about')">About</button>
+        </nav>
+
+        <!-- Wallet Section -->
+        <div class="wallet-section">
+            <button id="connectWalletBtn" onclick="connectWallet()">Connect Phantom Wallet</button>
+            <div id="walletInfo">Not Connected</div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="game-title">WELCOME TO 1% GAME</h1>
+        <p class="welcome-text">
+            Experience the future of gaming with blockchain technology. 
+            Connect your Phantom wallet and join the elite 1% of gamers.
+        </p>
+        
+        <div class="games-grid">
+            <div class="game-card">
+                <h3>Coin Flip</h3>
+                <p>Heads or Tails? Double your SOL or lose it all!</p>
+                <button class="play-btn" onclick="playGame('Coin Flip')">Play Now</button>
+            </div>
+            <div class="game-card">
+                <h3>Dice Roll</h3>
+                <p>Roll the dice and win big multipliers!</p>
+                <button class="play-btn" onclick="playGame('Dice Roll')">Play Now</button>
+            </div>
+            <div class="game-card">
+                <h3>Roulette</h3>
+                <p>Classic roulette with crypto rewards!</p>
+                <button class="play-btn" onclick="playGame('Roulette')">Play Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple Wallet Connection Function
+        async function connectWallet() {
+            console.log("Connect button clicked!");
+            
+            // Check if Phantom wallet exists
+            if (typeof window.solana === 'undefined') {
+                alert('⚠ Phantom Wallet not found! Please install it from https://phantom.app/');
+                window.open('https://phantom.app/', '_blank');
+                return;
+            }
+
+            try {
+                // Connect to wallet
+                const response = await window.solana.connect();
+                const walletAddress = response.publicKey.toString();
+                
+                // Update UI
+                document.getElementById('walletInfo').textContent = 
+                    Connected: ${walletAddress.substring(0, 8)}...;
+                document.getElementById('connectWalletBtn').textContent = 'Disconnect Wallet';
+                document.getElementById('connectWalletBtn').style.background = 'linear-gradient(135deg, #ff4444, #cc0000)';
+                document.getElementById('connectWalletBtn').setAttribute('onclick', 'disconnectWallet()');
+                
+                alert(✅ Wallet Connected!\nAddress: ${walletAddress});
+                
+            } catch (error) {
+                console.error('Connection error:', error);
+                alert('❌ Connection failed. Please try again.');
+            }
+        }
+
+        // Disconnect Wallet
+        function disconnectWallet() {
+            if (window.solana) {
+                window.solana.disconnect();
+            }
+            document.getElementById('walletInfo').textContent = 'Not Connected';
+            document.getElementById('connectWalletBtn').textContent = 'Connect Phantom Wallet';
+            document.getElementById('connectWalletBtn').style.background = 'linear-gradient(135deg, #00ff88, #00cc6a)';
+            document.getElementById('connectWalletBtn').setAttribute('onclick', 'connectWallet()');
+            alert('Wallet Disconnected');
+        }
+
+        // Game Functions
+        function playGame(gameName) {
+            if (document.getElementById('walletInfo').textContent === 'Not Connected') {
+                alert('Please connect your Phantom wallet first!');
+                connectWallet();
+            } else {
+                alert(🎮 Starting ${gameName}...\n(Wallet: ${document.getElementById('walletInfo').textContent}));
+            }
+        }
+
+        // Navigation Functions
+        function showSection(section) {
+            alert(Navigating to ${section} section...);
+        }
+
+        // Check if Phantom is available on page load
+        window.addEventListener('load', function() {
+            if (typeof window.solana !== 'undefined') {
+                console.log('✅ Phantom Wallet is available');
+            } else {
+                console.log('❌ Phantom Wallet not found');
+            }
+        });
+    </script>
+</body>
+</html>
